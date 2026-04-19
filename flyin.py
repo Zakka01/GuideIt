@@ -1,7 +1,11 @@
 from Parsing import parsing_config
 
+
 def main() -> None:
     config = parsing_config()
-    print(config)
+    for key, value in config.items():
+        print(f"{key.upper()} : {value}")
 
-main()
+
+if __name__ == "__main__":
+    main()
