@@ -62,5 +62,9 @@ class Path_finder:
                 continue
 
             for neighbor in neighbors:
+                if neighbor in visited:
+                    continue
+                if neighbor.zone_type == "blocked":
+                    continue
+                
                 cost = neighbor.it_cost()
-                if 
