@@ -6,7 +6,7 @@ install:
 	poetry install
 
 run :
-	$(PYTHON) $(MAIN) $(CONFIG)
+	@$(PYTHON) $(MAIN) $(CONFIG)
 
 debug:
 	$(PYTHON) -m pdb $(MAIN)

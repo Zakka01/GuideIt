@@ -3,7 +3,7 @@ import sys
 
 def parse_connection(value: str) -> dict:
 
-    max_link_capacity = None
+    max_link_capacity = 1
 
     if "[" in value:
         dist, metadata = value.strip().split(" ", 1)
@@ -69,10 +69,13 @@ def parse_hub(value: str) -> dict:
         "name": name,
         "x": int(x),
         "y": int(y),
-        "color": metadata_dict.get("color"),
-        "zone": metadata_dict.get("zone"),
+        "color": metadata_dict["color"],
+
+        "zone": metadata_dict["zone"]
+        if "zone" in metadata_dict else "normal",
+
         "max_drones": int(metadata_dict["max_drones"])
-        if "max_drones" in metadata_dict else None
+        if "max_drones" in metadata_dict else 1
     }
 
 
@@ -112,15 +115,19 @@ def validate_connection_hubs(config: dict) -> None:
     hubs = config["hub"]
     connection = config["connection"]
 
-    all_hubs = []
+    all_hubs = set()
     for hub in hubs:
-        all_hubs.append(hub["name"])
-    all_hubs.append(start_hub)
-    all_hubs.append(end_hub)
+        all_hubs.add(hub["name"])
+    all_hubs.add(start_hub)
+    all_hubs.add(end_hub)
 
-    connection
+    for c in connection:
+        from_dist, to_dist = c["from"], c["to"]
+        if from_dist not in all_hubs:
+            raise ValueError(f"Unknown hub: {from_dist}")
 
-    print(all_hubs)
+        if to_dist not in all_hubs:
+            raise ValueError(f"Unknown hub: {to_dist}")
 
 
 def parsing_config() -> dict:
