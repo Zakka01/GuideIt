@@ -1,5 +1,6 @@
 class Hub:
-    def __init__(self, config) -> None:
+
+    def __init__(self, config: dict) -> None:
         self.name = config["name"]
         self.y = config["y"]
         self.x = config["x"]
@@ -7,14 +8,19 @@ class Hub:
         self.color = config["color"]
         self.max_drones = config["max_drones"]
 
-    def is_zone_blocked(self):
+    def is_zone_blocked(self) -> bool:
         return self.zone_type == "blocked"
 
-    def is_zone_resticted(self):
+    def is_zone_resticted(self) -> bool:
         return self.zone_type == "restricted"
 
-    def is_zone_normal(self):
+    def is_zone_normal(self) -> bool:
         return self.zone_type == "normal"
 
-    def is_zone_priority(self):
+    def is_zone_priority(self) -> bool:
         return self.zone_type == "priority"
+
+    def it_cost(self) -> int:
+        if self.is_zone_resticted:
+            return 2
+        return 1

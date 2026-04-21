@@ -29,14 +29,17 @@ def parse_connection(value: str) -> dict:
     from_dist, to_dist = dist.strip().split("-", 1)
 
     return {
-        "from": from_dist,
-        "to": to_dist,
+        "from": from_dist.strip(),
+        "to": to_dist.strip(),
         "max_link_capacity": max_link_capacity
     }
 
 
 def parse_hub(value: str) -> dict:
-    name, x, other = value.strip().split(" ", 2)
+    try:
+        name, x, other = value.strip().split(" ", 2)
+    except Exception:
+        raise Exception("Invalid Config - Not enough values")
 
     metadata_dict = {}
     y = 0
@@ -49,7 +52,7 @@ def parse_hub(value: str) -> dict:
             raise ValueError("Invalid Metadata")
 
         if "=" not in metadata:
-            raise ValueError("Invalid Metadata")
+            raise ValueError("Invalid Metadata format")
 
         metadata = metadata.strip("[]")
         pairs = metadata.split()
@@ -69,7 +72,8 @@ def parse_hub(value: str) -> dict:
         "name": name,
         "x": int(x),
         "y": int(y),
-        "color": metadata_dict["color"],
+        "color": metadata_dict["color"]
+        if "color" in metadata_dict else "white",
 
         "zone": metadata_dict["zone"]
         if "zone" in metadata_dict else "normal",
@@ -84,6 +88,7 @@ def validate_config(config: dict) -> dict:
 
         parsed_config = {}
         for key, value in config.items():
+
             if key == "nb_drones":
                 parsed_config[key] = int(value)
 
@@ -170,6 +175,9 @@ def parsing_config() -> dict:
 
                         if key not in mandatory_keys and key not in extra_keys:
                             raise ValueError(f"Key: '{key}' is not Valid")
+
+                        if "#" in value:
+                            value, comment = value.split("#", 1)
 
                         if key in mandatory_keys:
                             config[key] = value

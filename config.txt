@@ -1,7 +1,7 @@
 # Easy Level 2: Simple fork with two paths
-nb_drones: 3 #d
+nb_drones: 3
 
-start_hub: start 0 1 [color=green]
+start_hub: start 0 1
 hub: junction 1 0 [color=yellow max_drones=2]
 hub: path_a 2 1 [color=blue]
 hub: path_b 2 -1 [color=blue]
@@ -12,8 +12,3 @@ connection: junction-path_a
 connection: junction-path_b 
 connection: path_a-goal
 connection: path_b-goal
-
-
-
-
-
