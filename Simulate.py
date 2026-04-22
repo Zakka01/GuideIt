@@ -1,5 +1,6 @@
 from Parsing import parsing_config
-from Path_finder.Shortest_path import Path_finder
+from Flyin.Fly_in import Path_finder
+
 
 def main() -> None:
     config = parsing_config()
