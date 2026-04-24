@@ -15,3 +15,6 @@ class Connection:
 
     def get_current_capacity(self) -> int:
         return self.current_capacity
+
+    def is_empty(self):
+        return self.current_capacity < self.capacity

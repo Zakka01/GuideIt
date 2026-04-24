@@ -23,11 +23,12 @@ class Drone:
 
     def move(self):
         self.current_pos += 1
+        self.status = "moving"
 
     def is_delivered(self) -> bool:
         return self.path[self.current_pos] == self.path[-1]
 
-    def can_move(self):
+    def can_move(self) -> int | bool:
         if self.current_pos >= len(self.path) - 1:
             return False
 
@@ -39,3 +40,9 @@ class Drone:
 
         elif isinstance(next_zone, Zone):
             return next_zone.get_max_drones()
+
+    def on_connection(self):
+        return isinstance(self, Connection)
+
+    def on_zone(self):
+        return isinstance(self, Zone)
