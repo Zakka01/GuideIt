@@ -1,11 +1,11 @@
 from parsing import parsing_config
-from path_finder import PathFinder
+from graph import Graph
 
 
 def main() -> None:
     config = parsing_config()
 
-    path_finder = PathFinder(config)
+    path_finder = Graph(config)
     path_finder.find_all_paths()
 
 

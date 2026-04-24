@@ -4,7 +4,7 @@ from connection import Connection
 from collections import deque
 
 
-class PathFinder:
+class Graph:
 
     def __init__(self, config: dict):
         self.config = config
