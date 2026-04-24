@@ -1,12 +1,12 @@
 from Parsing import parsing_config
-from Flyin.Fly_in import Path_finder
+from path_finder import PathFinder
 
 
 def main() -> None:
     config = parsing_config()
 
-    path_finder = Path_finder(config)
-    path_finder.find_shortest_path()
+    path_finder = PathFinder(config)
+    path_finder.find_all_paths()
 
 
 if __name__ == "__main__":

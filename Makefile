@@ -1,5 +1,5 @@
 PYTHON = python3
-MAIN = Simulate.py
+MAIN = fly_in.py
 CONFIG = config.txt
 
 install:
