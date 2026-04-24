@@ -1,4 +1,4 @@
-from Parsing import parsing_config
+from parsing import parsing_config
 from path_finder import PathFinder
 
 
