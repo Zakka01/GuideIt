@@ -57,7 +57,7 @@ class Graph:
             "cost": cost
         })
 
-    def find_all_paths(self) -> None:
+    def find_all_paths(self) -> List[dict]:
 
         queue = deque([(self.start_hub, [self.start_hub])])
 
@@ -88,15 +88,4 @@ class Graph:
                     else:
                         queue.append((neighbor, path_so_far + [neighbor]))
 
-        for p in self.paths:
-            for key, value in p.items():
-                if key == "path":
-                    for v in value:
-                        if not isinstance(v, Connection):
-                            print(f"({v.max_drones}) {v.name}")
-                        else:
-                            print(f"   @{v.connection_name}")
-
-                else:
-                    print("->", value)
-            print()
+        return self.paths

@@ -8,3 +8,10 @@ class Connection:
         self.from_dst = from_dst
         self.to_dst = to_dst
         self.capacity = capacity
+        self.current_capacity = 0
+
+    def has_capacity(self) -> int:
+        return self.capacity
+
+    def get_current_capacity(self) -> int:
+        return self.current_capacity
