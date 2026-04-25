@@ -21,6 +21,7 @@ class Simulator:
 
         while True:
             drones_moves = []
+            turns = 0
 
             for drone in self.drones:
                 if drone.is_delivered():
@@ -40,5 +41,16 @@ class Simulator:
                         "dst": next_zone
                     })
 
-                drone.move()
-                next_zone.drone_in += 1
+            valid_moves = []
+            for move in drones_moves:
+                valid_moves.append(move)
+
+            for move in valid_moves:
+                print(f"{move['drone'].id} - {move['dst'].name}")
+                move["drone"].move()
+                move["dst"].drone_in += 1
+
+            turns += 1
+
+            if all(drone.is_delivered() for drone in self.drones):
+                break

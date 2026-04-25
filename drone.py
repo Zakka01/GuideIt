@@ -27,18 +27,12 @@ class Drone:
     def is_delivered(self) -> bool:
         return self.path[self.current_pos] == self.path[-1]
 
-    def can_move(self) -> int | bool:
+    def can_move(self) -> int:
         if self.current_pos >= len(self.path) - 1:
             return False
 
         next_zone = self.next_zone()
-
-        if isinstance(next_zone, Connection):
-            next_zone.current_capacity += 1
-            return next_zone.is_empty()
-
-        elif isinstance(next_zone, Zone):
-            return next_zone.is_empty()
+        return next_zone.is_empty()
 
     def on_connection(self):
         return isinstance(self, Connection)
