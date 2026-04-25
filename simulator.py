@@ -18,12 +18,27 @@ class Simulator:
         return True
 
     def play(self):
-        for drone in self.drones:
-            if not drone.is_delivered():
+
+        while True:
+            drones_moves = []
+
+            for drone in self.drones:
+                if drone.is_delivered():
+                    continue
 
                 if drone.on_connection():
-                    drone.move()
+                    connection = drone.current_zone()
+                    drones_moves.append({
+                        "drone": drone,
+                        "dst": connection.to_dst
+                    })
 
                 if drone.can_move():
-                    next_zone_in_path = drone.next_zone()
-                    
+                    next_zone = drone.next_zone()
+                    drones_moves.append({
+                        "drone": drone,
+                        "dst": next_zone
+                    })
+
+                drone.move()
+                next_zone.drone_in += 1

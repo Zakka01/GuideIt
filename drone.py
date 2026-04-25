@@ -10,7 +10,6 @@ class Drone:
         self.path = path
         self.status = "waiting"
         self.current_pos = 0
-        self.on_connection_area = False
 
     def current_zone(self) -> Zone:
         return self.path[self.current_pos]
@@ -36,10 +35,10 @@ class Drone:
 
         if isinstance(next_zone, Connection):
             next_zone.current_capacity += 1
-            return next_zone.has_capacity()
+            return next_zone.is_empty()
 
         elif isinstance(next_zone, Zone):
-            return next_zone.get_max_drones()
+            return next_zone.is_empty()
 
     def on_connection(self):
         return isinstance(self, Connection)

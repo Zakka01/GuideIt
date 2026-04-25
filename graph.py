@@ -88,4 +88,16 @@ class Graph:
                     else:
                         queue.append((neighbor, path_so_far + [neighbor]))
 
+        for p in self.paths:
+            for key, value in p.items():
+                if key == "path":
+                    for v in value:
+                        if not isinstance(v, Connection):
+                            print(f"({v.max_drones}) {v.name}")
+                        else:
+                            print(f"   @{v.connection_name}")
+
+                else:
+                    print("->", value)
+            print()
         return self.paths
