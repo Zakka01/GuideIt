@@ -1,27 +1,109 @@
 from drone import Drone
 from zone import Zone
-# from connection import Connection
+from connection import Connection
 from typing import List
+from collections import defaultdict
 
 
 class Simulator:
 
-    def __init__(self, drones: List[Drone], start_hub: Zone, end_hub: Zone):
+    def __init__(self, drones: List[Drone],
+                 start_hub: Zone,
+                 end_hub: Zone,
+                 all_zones: List[Zone]):
+
+        self.all_zones = all_zones
         self.drones = drones
         self.start = start_hub
         self.end = end_hub
+        self.output = []
+        self.turns = 0
 
     def is_all_delivered(self) -> bool:
-        for drone in self.drones:
-            if drone.path[-1] != self.end:
-                return False
+        return all(drone.is_delivered() for drone in self.drones)
+
+    def will_be_free_next_turn(self, restricted_zone: Zone) -> bool:
+
+        current_capacity = restricted_zone.drone_in
+
+        if current_capacity == 0:
+            return True
+
+        if current_capacity >= restricted_zone.max_drones:
+            return False
+
         return True
 
-    def play(self):
+    def validate_moves(self, drones_moves: List):
+        valid_moves = []
+        dst_count = defaultdict(int)
 
-        while True:
+        drones_moves.sort(key=lambda m: int(m["drone"].id[1:]))
+
+        for move in drones_moves:
+            dst = move["dst"]
+            dst_name = dst.name
+
+            if isinstance(dst, Connection):
+                max_capacity = dst.capacity
+            else:
+                max_capacity = dst.max_drones
+
+            if dst_count[dst_name] < max_capacity:
+                valid_moves.append(move)
+                dst_count[dst_name] += 1
+
+        return valid_moves
+
+    def apply_moves(self, valid_moves: List):
+        for move in valid_moves:
+            drone = move["drone"]
+            dst = move["dst"]
+            move_type = move["type"]
+
+            if move_type == "normal_move":
+                drone.move()
+                dst.drone_in += 1
+
+            elif move_type == "connection_enter":
+                drone.move()
+                dst.drone_in += 1  # ✅ fixed
+                drone.on_connection = True
+
+            elif move_type == "connection_exit":
+                drone.move()
+                dst.drone_in += 1
+                drone.on_connection = False
+
+    def record_turn_output(self, valid_moves: List[dict]):
+
+        if not valid_moves:
+            return
+
+        turn_output = []
+        for move in valid_moves:
+            drone_id = move["drone"].id
+            destination_name = move["dst"].name
+            turn_output.append(f"{drone_id}-{destination_name}")
+
+        output_line = " ".join(turn_output)
+        self.output.append(output_line)
+        print(output_line)
+
+    def reset_zone_capacity(self):
+        for zone in self.all_zones:
+            zone.drone_in = 0
+
+    def update_zone_occupancy(self):
+        for drone in self.drones:
+            if not drone.is_delivered():
+                current = drone.current_zone()
+                current.drone_in += 1
+
+    def play(self) -> int:
+
+        while not self.is_all_delivered():
             drones_moves = []
-            turns = 0
 
             for drone in self.drones:
                 if drone.is_delivered():
@@ -31,26 +113,35 @@ class Simulator:
                     connection = drone.current_zone()
                     drones_moves.append({
                         "drone": drone,
-                        "dst": connection.to_dst
+                        "dst": connection.to_dst,
+                        "type": "connection_exit"
                     })
 
-                if drone.can_move():
+                elif drone.can_move():
                     next_zone = drone.next_zone()
-                    drones_moves.append({
-                        "drone": drone,
-                        "dst": next_zone
-                    })
 
-            valid_moves = []
-            for move in drones_moves:
-                valid_moves.append(move)
+                    if next_zone.is_zone_restricted():
+                        if self.will_be_free_next_turn(next_zone):
+                            drones_moves.append({
+                                "drone": drone,
+                                "dst": drone.current_zone(),
+                                "type": "connection_enter",
+                                "target": next_zone
+                            })
+                    else:
+                        drones_moves.append({
+                            "drone": drone,
+                            "dst": next_zone,
+                            "type": "normal_move",
+                        })
 
-            for move in valid_moves:
-                print(f"{move['drone'].id} - {move['dst'].name}")
-                move["drone"].move()
-                move["dst"].drone_in += 1
+            valid_moves = self.validate_moves(drones_moves)
+            self.apply_moves(valid_moves)
+            self.record_turn_output(valid_moves)
 
-            turns += 1
+            self.reset_zone_capacity()
+            self.update_zone_occupancy()
 
-            if all(drone.is_delivered() for drone in self.drones):
-                break
+            self.turns += 1
+
+        return self.turns

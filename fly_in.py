@@ -19,17 +19,19 @@ def assign_path_to_drone(nb_drones: int, all_paths: List) -> List:
 
 
 def main() -> None:
+
     config = parsing_config()
 
     nb_drones = get_drones_nb(config)
     graph = Graph(config)
 
+    all_zones = graph.get_all_zones()
     all_paths = graph.find_all_paths()
     all_paths = sorted(all_paths, key=lambda path: path["cost"])
 
     drones = assign_path_to_drone(nb_drones, all_paths)
 
-    simulator = Simulator(drones, graph.start_hub, graph.end_hub)
+    simulator = Simulator(drones, graph.start_hub, graph.end_hub, all_zones)
     simulator.play()
 
 

@@ -12,7 +12,7 @@ class Zone:
     def is_zone_blocked(self) -> bool:
         return self.zone_type == "blocked"
 
-    def is_zone_resticted(self) -> bool:
+    def is_zone_restricted(self) -> bool:
         return self.zone_type == "restricted"
 
     def is_zone_normal(self) -> bool:
@@ -22,7 +22,7 @@ class Zone:
         return self.zone_type == "priority"
 
     def it_cost(self) -> int:
-        if self.is_zone_resticted():
+        if self.is_zone_restricted():
             return 2
         return 1
 

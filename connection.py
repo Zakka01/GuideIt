@@ -8,7 +8,8 @@ class Connection:
         self.from_dst = from_dst
         self.to_dst = to_dst
         self.capacity = capacity
-        self.current_capacity = 0
+        self.drone_in = 0
+        self.on_connection = False
 
     def has_capacity(self) -> int:
         return self.capacity

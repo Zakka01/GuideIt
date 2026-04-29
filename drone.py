@@ -25,7 +25,7 @@ class Drone:
         self.status = "moving"
 
     def is_delivered(self) -> bool:
-        return self.path[self.current_pos] == self.path[-1]
+        return self.current_pos >= len(self.path) - 1
 
     def can_move(self) -> int:
         if self.current_pos >= len(self.path) - 1:

@@ -8,42 +8,45 @@ class Graph:
 
     def __init__(self, config: dict):
         self.config = config
-        self.start_hub = Zone(config["start_hub"])
-        self.end_hub = Zone(config["end_hub"])
-        self.connection_dict = self.zone_neighbors()
+        self.all_zones = self.get_all_zones()
+        self.zone_lookup = {z.name: z for z in self.all_zones}
+        self.start_hub = self.zone_lookup[config["start_hub"]["name"]]
+        self.end_hub = self.zone_lookup[config["end_hub"]["name"]]
+        self.connection_dict = self.build_connection_dict()
         self.paths = []
 
-    def zone_neighbors(self) -> dict:
-        config = self.config
-        zones: List = []
-        zones_lookup: dict = {}
-        connection_dict: dict = {}
+    def get_all_zones(self) -> List[Zone]:
 
-        for key, value in config.items():
-            if key in ["start_hub", "end_hub"]:
-                zone = Zone(config[key])
-                zones.append(zone)
-            elif key == "hub":
-                for value in config[key]:
-                    zone = Zone(value)
-                    zones.append(zone)
+        all_zones = []
 
-        for zone in zones:
-            zones_lookup[zone.name] = zone
+        if "start_hub" in self.config:
+            all_zones.append(Zone(self.config["start_hub"]))
 
-        connection = config["connection"]
-        for c in connection:
-            from_dst = c["from"]
-            to_dst = c["to"]
-            capacity = c["max_link_capacity"]
+        if "end_hub" in self.config:
+            all_zones.append(Zone(self.config["end_hub"]))
 
-            if from_dst not in connection_dict:
-                connection_dict[from_dst] = []
-            if to_dst not in connection_dict:
-                connection_dict[to_dst] = []
+        if "hub" in self.config:
+            for hub_data in self.config["hub"]:
+                all_zones.append(Zone(hub_data))
 
-            connection_dict[from_dst].append((zones_lookup[to_dst], capacity))
+        return all_zones
 
+    def build_connection_dict(self) -> dict:
+
+        connection_dict = {}
+        for zone in self.all_zones:
+            connection_dict[zone.name] = []
+
+        for c in self.config["connection"]:
+            from_name = c["from"]
+            to_name = c["to"]
+            capacity = c.get("max_link_capacity", 1)
+
+            from_zone = self.zone_lookup[from_name]
+            to_zone = self.zone_lookup[to_name]
+
+            connection_dict[from_name].append((to_zone, capacity))
+            connection_dict[to_name].append((from_zone, capacity))
         return connection_dict
 
     def build_paths(self, path: List):
@@ -52,10 +55,7 @@ class Graph:
             if not isinstance(p, Connection):
                 cost += p.it_cost()
 
-        self.paths.append({
-            "path": path,
-            "cost": cost
-        })
+        self.paths.append({"path": path, "cost": cost})
 
     def find_all_paths(self) -> List[dict]:
 
@@ -77,7 +77,7 @@ class Graph:
                 if neighbor.is_zone_blocked():
                     continue
 
-                if neighbor.is_zone_resticted():
+                if neighbor.is_zone_restricted():
                     connection = Connection(current_zone, neighbor, capacity)
                     new_path = path_so_far + [connection] + [neighbor]
                     queue.append((neighbor, new_path))
@@ -100,4 +100,5 @@ class Graph:
                 else:
                     print("->", value)
             print()
+
         return self.paths
