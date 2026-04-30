@@ -46,7 +46,8 @@ class Graph:
             to_zone = self.zone_lookup[to_name]
 
             connection_dict[from_name].append((to_zone, capacity))
-            connection_dict[to_name].append((from_zone, capacity))
+            # connection_dict[to_name].append((from_zone, capacity))
+
         return connection_dict
 
     def build_paths(self, path: List):

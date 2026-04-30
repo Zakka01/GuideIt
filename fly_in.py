@@ -28,10 +28,14 @@ def main() -> None:
     all_zones = graph.get_all_zones()
     all_paths = graph.find_all_paths()
     all_paths = sorted(all_paths, key=lambda path: path["cost"])
-
     drones = assign_path_to_drone(nb_drones, all_paths)
+    connection_dct = graph.build_connection_dict()
 
-    simulator = Simulator(drones, graph.start_hub, graph.end_hub, all_zones)
+    simulator = Simulator(drones,
+                          graph.start_hub,
+                          graph.end_hub,
+                          all_zones,
+                          connection_dct)
     simulator.play()
 
 

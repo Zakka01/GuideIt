@@ -10,26 +10,28 @@ class Simulator:
     def __init__(self, drones: List[Drone],
                  start_hub: Zone,
                  end_hub: Zone,
-                 all_zones: List[Zone]):
+                 all_zones: List[Zone],
+                 connection_dict: dict):
 
         self.all_zones = all_zones
         self.drones = drones
         self.start = start_hub
         self.end = end_hub
+        self.connections = connection_dict
         self.output = []
         self.turns = 0
 
     def is_all_delivered(self) -> bool:
         return all(drone.is_delivered() for drone in self.drones)
 
-    def will_be_free_next_turn(self, restricted_zone: Zone) -> bool:
+    def will_be_free_next_turn(self, restricted: Zone) -> bool:
 
-        current_capacity = restricted_zone.drone_in
+        current_capacity = restricted.drone_in
 
         if current_capacity == 0:
             return True
 
-        if current_capacity >= restricted_zone.max_drones:
+        if current_capacity >= restricted.max_drones:
             return False
 
         return True
@@ -67,7 +69,7 @@ class Simulator:
 
             elif move_type == "connection_enter":
                 drone.move()
-                dst.drone_in += 1  # ✅ fixed
+                dst.drone_in += 1
                 drone.on_connection = True
 
             elif move_type == "connection_exit":
@@ -94,11 +96,27 @@ class Simulator:
         for zone in self.all_zones:
             zone.drone_in = 0
 
-    def update_zone_occupancy(self):
-        for drone in self.drones:
-            if not drone.is_delivered():
-                current = drone.current_zone()
-                current.drone_in += 1
+    def get_connection(self, current: Zone, next: Zone) -> dict:
+        from_dst = current
+        to_dst = None
+
+        neighbors_of_current = self.connections[current.name]
+        for neighbor in neighbors_of_current:
+            if neighbor[0] == next:
+                to_dst = neighbor[0]
+                connection_capacity = neighbor[1]
+
+        return {
+            "from": from_dst,
+            "to": to_dst,
+            "connection_capacity": connection_capacity
+        }
+
+    # def update_zone_occupancy(self):
+    #     for drone in self.drones:
+    #         if not drone.is_delivered():
+    #             current = drone.current_zone()
+    #             current.drone_in += 1
 
     def play(self) -> int:
 
@@ -119,6 +137,12 @@ class Simulator:
 
                 elif drone.can_move():
                     next_zone = drone.next_zone()
+                    current_zone = drone.current_zone()
+                    print(f">>>> {current_zone.name} {current_zone.drone_in}")
+                    print(f">>>> {next_zone.name} {next_zone.drone_in}")
+
+                    connection = self.get_connection(current_zone, next_zone)
+                    capacity = connection["connection_capacity"]
 
                     if next_zone.is_zone_restricted():
                         if self.will_be_free_next_turn(next_zone):
@@ -126,12 +150,14 @@ class Simulator:
                                 "drone": drone,
                                 "dst": drone.current_zone(),
                                 "type": "connection_enter",
+                                "connection_capacity": capacity,
                                 "target": next_zone
                             })
                     else:
                         drones_moves.append({
                             "drone": drone,
                             "dst": next_zone,
+                            "connection_capacity": capacity,
                             "type": "normal_move",
                         })
 
@@ -140,7 +166,6 @@ class Simulator:
             self.record_turn_output(valid_moves)
 
             self.reset_zone_capacity()
-            self.update_zone_occupancy()
 
             self.turns += 1
 
