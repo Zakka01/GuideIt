@@ -29,5 +29,5 @@ class Zone:
     def get_max_drones(self) -> int:
         return self.max_drones
 
-    def is_empty(self):
+    def has_space(self) -> bool:
         return self.drone_in < self.max_drones

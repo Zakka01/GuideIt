@@ -8,7 +8,6 @@ class Drone:
     def __init__(self, id: str, path: List[Zone]):
         self.id = id
         self.path = path
-        self.status = "waiting"
         self.current_pos = 0
 
     def current_zone(self) -> Zone:
@@ -16,6 +15,9 @@ class Drone:
 
     def next_zone(self) -> Zone:
         return self.path[self.current_pos + 1]
+
+    def next_of_next_zone(self) -> Zone:
+        return self.path[self.current_pos + 2]
 
     def deliver(self):
         self.status = "delivered"
@@ -28,14 +30,20 @@ class Drone:
         return self.current_pos >= len(self.path) - 1
 
     def can_move(self) -> int:
-        if self.current_pos >= len(self.path) - 1:
+        next_index = self.current_pos + 1
+
+        if next_index >= len(self.path):
             return False
 
-        next_zone = self.next_zone()
-        return next_zone.is_empty()
+        next_zone = self.path[next_index]
 
-    def on_connection(self):
-        return isinstance(self, Connection)
+        if not next_zone.has_space():
+            return False
 
-    def on_zone(self):
-        return isinstance(self, Zone)
+        return True
+
+    def on_connection(self, current_zone):
+        return isinstance(current_zone, Connection)
+
+    def on_zone(self, current_zone):
+        return isinstance(current_zone, Zone)
