@@ -42,11 +42,8 @@ class Graph:
             to_name = c["to"]
             capacity = c.get("max_link_capacity", 1)
 
-            from_zone = self.zone_lookup[from_name]
             to_zone = self.zone_lookup[to_name]
-
             connection_dict[from_name].append((to_zone, capacity))
-            # connection_dict[to_name].append((from_zone, capacity))
 
         return connection_dict
 

@@ -90,7 +90,7 @@ class Simulator:
 
         output_line = " ".join(turn_output)
         self.output.append(output_line)
-        print(output_line)
+        print(">>>", output_line)
 
     def reset_zone_capacity(self):
         for zone in self.all_zones:
@@ -125,9 +125,11 @@ class Simulator:
 
             for drone in self.drones:
                 if drone.is_delivered():
+                    # print(f"{drone.id} delivered, skipping")
                     continue
 
                 if drone.on_connection():
+                    print(f"{drone.id} on connection")
                     connection = drone.current_zone()
                     drones_moves.append({
                         "drone": drone,
@@ -136,15 +138,15 @@ class Simulator:
                     })
 
                 elif drone.can_move():
+                    print(f"{drone.id} can move")
                     next_zone = drone.next_zone()
                     current_zone = drone.current_zone()
-                    print(f">>>> {current_zone.name} {current_zone.drone_in}")
-                    print(f">>>> {next_zone.name} {next_zone.drone_in}")
 
                     connection = self.get_connection(current_zone, next_zone)
                     capacity = connection["connection_capacity"]
 
                     if next_zone.is_zone_restricted():
+                        print("this is a restricted")
                         if self.will_be_free_next_turn(next_zone):
                             drones_moves.append({
                                 "drone": drone,
@@ -154,12 +156,14 @@ class Simulator:
                                 "target": next_zone
                             })
                     else:
+                        print(f"{drone.id} ADDED")
                         drones_moves.append({
                             "drone": drone,
                             "dst": next_zone,
                             "connection_capacity": capacity,
                             "type": "normal_move",
                         })
+                        print(f"  next zone: {next_zone.name}")
 
             valid_moves = self.validate_moves(drones_moves)
             self.apply_moves(valid_moves)
