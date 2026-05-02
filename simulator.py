@@ -48,17 +48,19 @@ class Simulator:
             dst_name = dst.name
             current_zone = move["drone"].current_zone()
             
-            # Get actual connection capacity
-            connection_info = self.get_connection(current_zone, dst)
-            connection_capacity = connection_info["connection_capacity"]
-            connection_name = connection_info["from"].name + "-" + connection_info["to"].name
+            if isinstance(current_zone, Zone):
+                connection_info = self.get_connection(current_zone, dst)
+                connection_capacity = connection_info["connection_capacity"]
+                connection_name = connection_info["from"].name + "-" + connection_info["to"].name
+            else:
+                connection_capacity = current_zone.max_capacity
+                connection_name = current_zone.name
             
             if isinstance(dst, Connection):
                 max_capacity = dst.max_capacity
             else:
                 max_capacity = dst.max_drones
 
-            # Check BOTH destination AND connection
             if dst_count[dst_name] < max_capacity and \
             connection_count[connection_name] < connection_capacity:
                 valid_moves.append(move)
@@ -69,18 +71,15 @@ class Simulator:
 
     def get_connection(self, current: Zone, next: Zone) -> dict:
         from_dst = current
-        to_dst = None
+        to_dst = next # default
+        connection_capacity = 1 # default
 
         neighbors_of_current = self.connections[current.name]
         for neighbor in neighbors_of_current:
-            print(neighbor[0].name, neighbor[1], type(neighbor[0]))
             if neighbor[0] == next:
                 to_dst = neighbor[0]
                 connection_capacity = neighbor[1]
-        print("from: ", from_dst.name)
-        print("to: ", to_dst)
-        print("capa", connection_capacity)
-
+        
         return {
             "from": from_dst,
             "to": to_dst,
@@ -111,11 +110,6 @@ class Simulator:
                 current.drone_in -= 1 if current.drone_in > 0 else 0
                 dst.drone_in += 1
                 drone.on_connection = False
-
-            print(f"\033[92m{drone.id}\033[0m")
-            print()
-            print(f"\033[91m{current.name}, {current.drone_in}\033[0m")
-            print(f"\033[93m{dst.name}, {dst.drone_in}\033[0m")
 
     def record_turn_output(self, valid_moves: List[dict]):
         if not valid_moves:

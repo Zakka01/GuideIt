@@ -29,17 +29,10 @@ class Drone:
     def is_delivered(self) -> bool:
         return self.current_pos >= len(self.path) - 1
 
-    def can_move(self) -> int:
+    def can_move(self) -> bool:
         next_index = self.current_pos + 1
-
         if next_index >= len(self.path):
             return False
-
-        next_zone = self.path[next_index]
-
-        if not next_zone.has_space():
-            return False
-
         return True
 
     def on_connection(self, current_zone):
