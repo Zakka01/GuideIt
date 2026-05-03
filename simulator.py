@@ -47,30 +47,34 @@ class Simulator:
             dst = move["dst"]
             dst_name = dst.name
             current_zone = move["drone"].current_zone()
-            
+
             if isinstance(current_zone, Zone):
                 connection_info = self.get_connection(current_zone, dst)
                 connection_capacity = connection_info["connection_capacity"]
-                connection_name = connection_info["from"].name + "-" + connection_info["to"].name
+                connection_name = connection_info["from"].name + "-" + \
+                    connection_info["to"].name
             else:
                 connection_capacity = current_zone.max_capacity
                 connection_name = current_zone.name
-            
+
             if isinstance(dst, Connection):
                 max_capacity = dst.max_capacity
             else:
                 max_capacity = dst.max_drones
 
+            drone_leaving = 0
+            if current_zone != dst:
+                drone_leaving += 1
+
             current_capacity = dst.drone_in
-            available_slots = max_capacity - current_capacity
+            available_slots = max_capacity - current_capacity + drone_leaving
 
             if dst_count[dst_name] < available_slots and \
-                connection_count[connection_name] < connection_capacity:
+               connection_count[connection_name] < connection_capacity:
 
                 valid_moves.append(move)
                 dst_count[dst_name] += 1
                 connection_count[connection_name] += 1
-
 
         return valid_moves
 

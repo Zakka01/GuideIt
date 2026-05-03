@@ -11,13 +11,11 @@ def get_drones_nb(config) -> int:
 
 def assign_path_to_drone(nb_drones: int, all_paths: List) -> List:
     drones = []
-    if len(all_paths) > 2:
-        selected_paths = all_paths[:2]
-    else:
-        selected_paths = all_paths
+
+    selected_paths = all_paths[:2] if len(all_paths) >= 2 else all_paths
 
     for i in range(nb_drones):
-        path = selected_paths[i % 2]["path"]
+        path = selected_paths[i % len(selected_paths)]["path"]
         drone = Drone(f"D{i+1}", path)
         drones.append(drone)
     return drones
