@@ -61,11 +61,16 @@ class Simulator:
             else:
                 max_capacity = dst.max_drones
 
-            if dst_count[dst_name] < max_capacity and \
-            connection_count[connection_name] < connection_capacity:
+            current_capacity = dst.drone_in
+            available_slots = max_capacity - current_capacity
+
+            if dst_count[dst_name] < available_slots and \
+                connection_count[connection_name] < connection_capacity:
+
                 valid_moves.append(move)
                 dst_count[dst_name] += 1
                 connection_count[connection_name] += 1
+
 
         return valid_moves
 
