@@ -1,0 +1,20 @@
+D1-gate1
+D1-waiting_area1 D2-gate1
+D1-priority_bypass1 D2-gate2 D3-gate1
+D1-priority_bypass2 D2-gate3 D3-waiting_area1 D4-gate1
+D1-convergence D2-waiting_area3 D3-priority_bypass1 D4-gate2 D5-gate1
+D1-final_bottleneck D2-convergence D3-priority_bypass2 D4-gate3 D5-waiting_area1 D6-gate1
+D1-goal D2-final_bottleneck D3-convergence D4-waiting_area3 D5-priority_bypass1 D6-gate2 D7-gate1
+D2-goal D3-final_bottleneck D4-convergence D5-priority_bypass2 D6-gate3 D7-waiting_area1 D8-gate1
+D3-goal D4-final_bottleneck D5-convergence D6-waiting_area3 D7-priority_bypass1 D8-gate2 D9-gate1
+D4-goal D5-final_bottleneck D6-convergence D7-priority_bypass2 D8-gate3 D9-waiting_area1 D10-gate1
+D5-goal D6-final_bottleneck D7-convergence D8-waiting_area3 D9-priority_bypass1 D10-gate2 D11-gate1
+D6-goal D7-final_bottleneck D8-convergence D9-priority_bypass2 D10-gate3 D11-waiting_area1 D12-gate1
+D7-goal D8-final_bottleneck D9-convergence D10-waiting_area3 D11-priority_bypass1 D12-gate2
+D8-goal D9-final_bottleneck D10-convergence D11-priority_bypass2 D12-gate3
+D9-goal D10-final_bottleneck D11-convergence D12-waiting_area3
+D10-goal D11-final_bottleneck D12-convergence
+D11-goal D12-final_bottleneck
+D12-goal
+
+>> number of turns: 18

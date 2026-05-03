@@ -24,18 +24,6 @@ class Simulator:
     def is_all_delivered(self) -> bool:
         return all(drone.is_delivered() for drone in self.drones)
 
-    def will_be_free_next_turn(self, restricted_zone: Zone) -> bool:
-
-        current_capacity = restricted_zone.drone_in
-
-        if current_capacity == 0:
-            return True
-
-        if current_capacity >= restricted_zone.max_drones:
-            return False
-
-        return True
-
     def validate_moves(self, drones_moves: List):
         valid_moves = []
         dst_count = defaultdict(int)
@@ -126,14 +114,14 @@ class Simulator:
 
         turn_output = []
         for move in valid_moves:
-            if not move.get("record", True):
+            if not move.get("record"):
                 continue
             
             drone_id = move["drone"].id
             dst = move["dst"]
             
             if isinstance(dst, Connection):
-                destination_name = dst.to_dst.name
+                destination_name = dst.name
             else:
                 destination_name = dst.name
             
@@ -142,10 +130,12 @@ class Simulator:
         if turn_output:
             output_line = " ".join(turn_output)
             self.output.append(output_line)
-            print(output_line)
-
+            # print(output_line)
+        
+        return output_line
+        
     def play(self) -> int:
-
+        output = []
         while not self.is_all_delivered():
             drones_moves = []
             
@@ -168,14 +158,13 @@ class Simulator:
                     next_item = drone.next_zone()
                     
                     if isinstance(next_item, Connection):
-                        if self.will_be_free_next_turn(next_item.to_dst):
-                            drones_moves.append({
-                                "current": current,
-                                "drone": drone,
-                                "dst": next_item,
-                                "type": "connection_enter",
-                                "record": False
-                            })
+                        drones_moves.append({
+                            "current": current,
+                            "drone": drone,
+                            "dst": next_item,
+                            "type": "connection_enter",
+                            "record": True
+                        })
                     
                     else:
                         drones_moves.append({
@@ -188,8 +177,11 @@ class Simulator:
             
             valid_moves = self.validate_moves(drones_moves)
             self.apply_moves(valid_moves)
-            self.record_turn_output(valid_moves)
+            output.append(self.record_turn_output(valid_moves))
             self.turns += 1
 
-        print(">", self.turns)
+        with open("output.txt", "w") as f:
+            for o in output:
+                f.write(f"{o}\n")
+            f.write(f"\n>> number of turns: {self.turns}")
         return self.turns
