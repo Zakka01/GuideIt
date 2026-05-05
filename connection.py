@@ -14,5 +14,5 @@ class Connection:
     def get_current_capacity(self) -> int:
         return self.drone_in
 
-    def has_space(self):
+    def has_space(self) -> bool:
         return self.drone_in < self.max_capacity

@@ -29,15 +29,29 @@ class Graph:
                 for hub in self.config["hub"]:
                     all_zones.append(Zone(hub))
 
-            seen = set()
-            dups = set()
-            for zone in all_zones:
-                if zone.name in seen:
-                    dups.add(zone.name)
-                seen.add(zone.name)
+            seen_names = set()
+            dups_names = set()
 
-            if dups:
+            seen_coors = set()
+            dups_coors = set()
+
+            for zone in all_zones:
+                coordinates = (zone.y, zone.x)
+
+                if zone.name in seen_names:
+                    dups_names.add(zone.name)
+
+                if coordinates in seen_coors:
+                    dups_coors.add(coordinates)
+
+                seen_coors.add(coordinates)
+                seen_names.add(zone.name)
+
+            if dups_names:
                 raise ValueError("Can't have two duplicated zones name")
+            if dups_coors:
+                raise ValueError("Can't have two zones with the same Coordinates")
+
         except ValueError as e:
             print(f"ERROR: {e}")
             exit(0)

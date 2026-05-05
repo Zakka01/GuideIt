@@ -2,7 +2,7 @@ import sys
 
 
 class Parser:
-    def __init__(self):
+    def __init__(self) -> None:
         self.config: dict = {}
 
     def parse_connection(self, value: str) -> dict:
@@ -53,7 +53,6 @@ class Parser:
         y = 0
 
         if " " in other:
-
             y, metadata = other.split(" ", 1)
             y, metadata = y.strip(), metadata.strip()
 
@@ -70,7 +69,7 @@ class Parser:
                     raise ValueError("Invalid Metadata format")
                 key, value = pair.split("=", 1)
                 if key not in ["zone", "color", "max_drones"]:
-                    raise ValueError("Invalid Metadata Key")
+                    raise ValueError(f"Invalid Metadata Key '{key}'")
 
                 metadata_dict[key] = value
 

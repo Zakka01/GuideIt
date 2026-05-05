@@ -3,6 +3,7 @@ from graph import Graph
 from drone import Drone
 from typing import List
 from simulator import Simulator
+from render import Render
 
 
 class Main:
@@ -40,6 +41,10 @@ class Main:
                               all_zones,
                               connection_dct)
         simulator.play()
+
+        zones = graph.get_all_zones()
+        connections = graph.build_connection_dict()
+        render = Render(zones, connections)
 
 
 if __name__ == "__main__":
