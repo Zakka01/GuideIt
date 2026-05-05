@@ -35,8 +35,8 @@ class Drone:
             return False
         return True
 
-    def on_connection(self, current_zone):
+    def on_connection(self, current_zone: Zone):
         return isinstance(current_zone, Connection)
 
-    def on_zone(self, current_zone):
+    def on_zone(self, current_zone: Zone):
         return isinstance(current_zone, Zone)

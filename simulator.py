@@ -59,7 +59,8 @@ class Simulator:
 
             if dst_count[dst_name] < available_slots and \
                connection_count[connection_name] < connection_capacity:
-
+                # connection_count[connection_name] += 1
+                # print(f">> {connection_name} {connection_capacity} dst max_drones {max_capacity}")
                 valid_moves.append(move)
                 dst_count[dst_name] += 1
                 connection_count[connection_name] += 1
@@ -68,15 +69,15 @@ class Simulator:
 
     def get_connection(self, current: Zone, next: Zone) -> dict:
         from_dst = current
-        to_dst = next # default
-        connection_capacity = 1 # default
+        to_dst = next  # default
+        connection_capacity = 1  # default
 
         neighbors_of_current = self.connections[current.name]
         for neighbor in neighbors_of_current:
             if neighbor[0] == next:
                 to_dst = neighbor[0]
                 connection_capacity = neighbor[1]
-        
+
         return {
             "from": from_dst,
             "to": to_dst,
@@ -89,7 +90,6 @@ class Simulator:
             dst = move["dst"]
             current = move["current"]
             move_type = move["type"]
-
 
             if move_type == "normal_move":
                 drone.move()
@@ -116,35 +116,35 @@ class Simulator:
         for move in valid_moves:
             if not move.get("record"):
                 continue
-            
+
             drone_id = move["drone"].id
             dst = move["dst"]
-            
+
             if isinstance(dst, Connection):
                 destination_name = dst.name
             else:
                 destination_name = dst.name
-            
+
             turn_output.append(f"{drone_id}-{destination_name}")
-        
+
         if turn_output:
             output_line = " ".join(turn_output)
             self.output.append(output_line)
-            # print(output_line)
-        
+            print(output_line)
+
         return output_line
-        
+
     def play(self) -> int:
         output = []
         while not self.is_all_delivered():
             drones_moves = []
-            
+
             for drone in self.drones:
                 if drone.is_delivered():
                     continue
-                
+
                 current = drone.current_zone()
-                
+
                 if isinstance(current, Connection):
                     drones_moves.append({
                         "current": current,
@@ -153,10 +153,10 @@ class Simulator:
                         "type": "connection_exit",
                         "record": True
                     })
-                
+
                 elif drone.can_move():
                     next_item = drone.next_zone()
-                    
+
                     if isinstance(next_item, Connection):
                         drones_moves.append({
                             "current": current,
@@ -165,7 +165,7 @@ class Simulator:
                             "type": "connection_enter",
                             "record": True
                         })
-                    
+
                     else:
                         drones_moves.append({
                             "current": current,
@@ -174,14 +174,11 @@ class Simulator:
                             "type": "normal_move",
                             "record": True
                         })
-            
+
             valid_moves = self.validate_moves(drones_moves)
             self.apply_moves(valid_moves)
             output.append(self.record_turn_output(valid_moves))
             self.turns += 1
 
-        with open("output.txt", "w") as f:
-            for o in output:
-                f.write(f"{o}\n")
-            f.write(f"\n>> number of turns: {self.turns}")
+        print(f"\n{self.turns}")
         return self.turns

@@ -1,5 +1,6 @@
 import sys
 
+
 class Parser:
     def __init__(self):
         self.config: dict = {}
@@ -45,7 +46,8 @@ class Parser:
             raise Exception("Invalid Config - Not enough values")
 
         if "-" in name or " " in name:
-            raise ValueError(f"Invalid zone name '{name}' - Zone names cannot contain '-'")
+            raise ValueError(f"Invalid zone name '{name}' - \
+                             Zone names cannot contain '-'")
 
         metadata_dict = {}
         y = 0
@@ -74,7 +76,7 @@ class Parser:
 
         else:
             y = other
-        
+
         return {
             "name": name,
             "x": int(x),
@@ -97,7 +99,8 @@ class Parser:
 
                 if key == "nb_drones":
                     if int(value) <= 0:
-                        raise ValueError(f"{key} must be a positive_integer and greater than 0") 
+                        raise ValueError(f"{key} must be a positive_integer \
+                                         and greater than 0")
                     parsed_config[key] = int(value)
 
                 elif key in ["start_hub", "end_hub"]:
@@ -105,7 +108,8 @@ class Parser:
 
                 elif key == "hub":
                     for v in value:
-                        parsed_config["hub"] = [self.parse_hub(v) for v in value]
+                        parsed_config["hub"] = \
+                            [self.parse_hub(v) for v in value]
 
                 elif key == "connection":
                     if key not in parsed_config:
@@ -177,9 +181,11 @@ class Parser:
                                 raise ValueError(f"No value given for {key}")
 
                             if key in mandatory_keys and key in config:
-                                raise ValueError(f"{key} should not be duplicated")
+                                raise ValueError(f"{key} should not \
+                                                 be duplicated")
 
-                            if key not in mandatory_keys and key not in extra_keys:
+                            if key not in mandatory_keys and \
+                               key not in extra_keys:
                                 raise ValueError(f"Key: '{key}' is not Valid")
 
                             if "#" in value:

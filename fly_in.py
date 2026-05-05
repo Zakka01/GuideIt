@@ -4,6 +4,7 @@ from drone import Drone
 from typing import List
 from simulator import Simulator
 
+
 class Main:
 
     def get_drones_nb(self, config) -> int:
@@ -34,10 +35,10 @@ class Main:
         connection_dct = graph.build_connection_dict()
 
         simulator = Simulator(drones,
-                            graph.start_hub,
-                            graph.end_hub,
-                            all_zones,
-                            connection_dct)
+                              graph.start_hub,
+                              graph.end_hub,
+                              all_zones,
+                              connection_dct)
         simulator.play()
 
 
