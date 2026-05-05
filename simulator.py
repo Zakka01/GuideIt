@@ -58,9 +58,9 @@ class Simulator:
             available_slots = max_capacity - current_capacity + drone_leaving
 
             if dst_count[dst_name] < available_slots and \
-               connection_count[connection_name] < connection_capacity:
-                # connection_count[connection_name] += 1
-                # print(f">> {connection_name} {connection_capacity} dst max_drones {max_capacity}")
+               connection_count[connection_name] < connection_capacity and \
+               connection_count[connection_name] < max_capacity:
+
                 valid_moves.append(move)
                 dst_count[dst_name] += 1
                 connection_count[connection_name] += 1
@@ -130,7 +130,7 @@ class Simulator:
         if turn_output:
             output_line = " ".join(turn_output)
             self.output.append(output_line)
-            print(output_line)
+            print(f"\033[31m{output_line}\033[0m")
 
         return output_line
 
