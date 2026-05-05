@@ -18,16 +18,29 @@ class Graph:
     def get_all_zones(self) -> List[Zone]:
 
         all_zones = []
+        try:
+            if "start_hub" in self.config:
+                all_zones.append(Zone(self.config["start_hub"]))
 
-        if "start_hub" in self.config:
-            all_zones.append(Zone(self.config["start_hub"]))
+            if "end_hub" in self.config:
+                all_zones.append(Zone(self.config["end_hub"]))
 
-        if "end_hub" in self.config:
-            all_zones.append(Zone(self.config["end_hub"]))
+            if "hub" in self.config:
+                for hub in self.config["hub"]:
+                    all_zones.append(Zone(hub))
 
-        if "hub" in self.config:
-            for hub_data in self.config["hub"]:
-                all_zones.append(Zone(hub_data))
+            seen = set()
+            dups = set()
+            for zone in all_zones:
+                if zone.name in seen:
+                    dups.add(zone.name)
+                seen.add(zone.name)
+
+            if dups:
+                raise ValueError("Can't have two duplicated zones name")
+        except ValueError as e:
+            print(f"ERROR: {e}")
+            exit(0)
 
         return all_zones
 

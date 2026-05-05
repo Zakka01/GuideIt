@@ -39,9 +39,13 @@ class Parser:
 
     def parse_hub(self, value: str) -> dict:
         try:
-            name, x, other = value.strip().split(" ", 2)
+            name, x, other = value.strip().split(maxsplit=2)
+            name, x, other = name.strip(), x.strip(), other.strip()
         except Exception:
             raise Exception("Invalid Config - Not enough values")
+
+        if "-" in name or " " in name:
+            raise ValueError(f"Invalid zone name '{name}' - Zone names cannot contain '-'")
 
         metadata_dict = {}
         y = 0
@@ -49,9 +53,10 @@ class Parser:
         if " " in other:
 
             y, metadata = other.split(" ", 1)
+            y, metadata = y.strip(), metadata.strip()
 
             if not metadata.startswith("[") or not metadata.endswith("]"):
-                raise ValueError("Invalid Metadata")
+                raise ValueError(f"Invalid Metadata '{metadata}'")
 
             if "=" not in metadata:
                 raise ValueError("Invalid Metadata format")
@@ -69,7 +74,7 @@ class Parser:
 
         else:
             y = other
-
+        
         return {
             "name": name,
             "x": int(x),
@@ -91,6 +96,8 @@ class Parser:
             for key, value in config.items():
 
                 if key == "nb_drones":
+                    if int(value) <= 0:
+                        raise ValueError(f"{key} must be a positive_integer and greater than 0") 
                     parsed_config[key] = int(value)
 
                 elif key in ["start_hub", "end_hub"]:
@@ -170,7 +177,7 @@ class Parser:
                                 raise ValueError(f"No value given for {key}")
 
                             if key in mandatory_keys and key in config:
-                                raise ValueError("Duplicate Lines")
+                                raise ValueError(f"{key} should not be duplicated")
 
                             if key not in mandatory_keys and key not in extra_keys:
                                 raise ValueError(f"Key: '{key}' is not Valid")
@@ -198,6 +205,10 @@ class Parser:
 
             valid_config = self.validate_config(config)
             self.validate_connection_hubs(valid_config)
+
+            # just making the (start, hub) hubs capable of holding all drones
+            valid_config["start_hub"]["max_drones"] = valid_config["nb_drones"]
+            valid_config["end_hub"]["max_drones"] = valid_config["nb_drones"]
 
         except Exception as e:
             print(f"ERROR: {e}")
